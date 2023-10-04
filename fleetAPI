@@ -1,0 +1,3993 @@
+Fleet API (1.24.0)
+Overview
+This document defines the interface for managing terminal networks, terminals and authorization
+of fleet card transactions on terminals. The interface is implemented as a REST webservice with
+data transferred as JSON.
+PDF Version: fleetAPI.pdf
+Change history
+Date Version Changed by Description of changes
+2017-
+09-04
+1.0.3
+Paweł Gamrot,
+Seweryn
+Krajewski, Łukasz
+Guzik
+The initial version of the documentation
+2017-
+09-19
+1.0.4 Paweł Gamrot
+Correction of the url access
+correction of names in Partners object
+2017-
+09-28
+1.0.5 Paweł Gamrot
+Correction of allowed values for fields amount/quantity
+correction of sample (track2Data should be in hexstr)
+2017-
+10-03
+1.0.6
+Paweł Gamrot,
+Łukasz Guzik
+Format change from int32 to int64 for amount fields,
+Correction of maturity of fields in EodItem
+correction of EodTransaction.amount range
+2017-
+10-12
+1.0.7 Łukasz Guzik
+Changed description of 901 response code - Advice
+acknowledged
+2017-
+11-22
+1.0.8 Łukasz Guzik
+Partner model change, update of regular expression for
+authorisation code and plate number format control
+2017-
+12-04
+1.0.9 Łukasz Guzik
+Change of data definition model of parameters and
+mandatory parameter EOD_FILE_NAME_FORMAT for DKV
+2018-
+01-18
+1.1.0 Łukasz Guzik
+Customer model change. Added a new model of client's
+internal parameters
+2018-
+02-07
+1.2.0 Łukasz Guzik
+Receipt id field added to a manual transaction endpoint
+and EOD operation endpoint
+2018-
+02-28
+1.3.0 Łukasz Guzik Change of registration number format
+2018-
+04-13
+1.4.0 Maciej Wiosło Manual transaction model added
+2018-
+05-29
+1.5.0 Maciej Wiosło
+New global parameters for partners and stations
+independent to fleets, searching of partner by NIP
+2018-
+08-21
+1.6.0 Maciej Wiosło System size control parameters added
+2018-
+09-17
+1.7.0 Maciej Wiosło Product mapping method added
+2018-
+10-23
+1.7.1 Maciej Wiosło FIX - removing parameters of removed customer
+2018-
+11-26
+1.7.2
+Maciej Wiosło,
+Marcin Kisielewski
+Acceptation of 10 digit authorisation code in DKV
+2019-
+02-04
+1.8.0
+Maciej Wiosło,
+Ireneusz
+Olchawski
+Product type flag in product list added
+Terminal authorisation added in endpoints v1/fleets and
+v1/terminals
+TIMEZONE implementation in transaction date and time
+Terminal authorisation added in endpoint /v1/products
+Global parameters added: MAX_BATCH_TRANSACTIONS,
+DEFAULT_RESPONSE_LANG
+Global parameter management endpoint added
+Group level added
+Station list endpoint change
+Date Version Changed by Description of changes
+2019-
+03-26
+1.9.0 Maciej Wiosło
+Validation of EOD size against
+MAX_BATCH_TRANSACTIONS parameter
+2019-
+04-01
+1.9.1 Maciej Wiosło Parameters geting fix
+2019-
+06-03
+1.9.2
+Maciej Wiosło,
+Seweryn Krajewski
+Translation of yaml
+2019-
+07-04
+1.9.3 Maciej Wiosło Terminal edit fix
+2019-
+10-16
+1.10.0 Maciej Wiosło EUROWAG fleet added
+2020-
+01-08
+1.10.1 Maciej Wiosło
+FIX - checking if the terminal sends EOD transaction that
+already exist
+2019-
+11-12
+1.11.0 Paweł Gamrot LOTOS and E100 fleets added
+2020-
+01-31
+1.12.0 Paweł Gamrot
+Add countryCode parameter to /v1/products endpoint
+Add balance transaction (6-BL)
+2020-
+04-03
+1.12.1 Tomasz Michno Removing endpoints for user modification
+2020-
+04-14
+1.12.2 Maciej Wiosło AA response code fix - for AA amount higher than PA
+2020-
+04-28
+1.12.3
+Maciej Wiosło,
+Tomasz Michno
+Receipt id field pattern and max length 8 to 10 changed,
+added sorting for products endpoint
+2020-
+06-09
+1.13.0 Maciej Wiosło
+Add complaintId field to
+/v1/stations/{stationId}/transactions endpoint
+2021-
+01-12
+1.14.0 Paweł Gamrot
+Add JWT Token Security
+Add new endpoint
+/v1/terminals/{terminalId}/fleets/{fleetName}/transactions
+Add new endpoint for EOD where source is file
+2021-
+01-19
+1.14.1 Paweł Gamrot
+Fix endpoint to get eodfile status to get eodfile status by
+fileName
+2021-
+02-03
+1.14.2 Paweł Gamrot Add relatedPartnerId field to partner object
+2021-
+02-09
+1.14.3 Paweł Gamrot Add default to fileLocalization
+2021-
+02-09
+1.14.3
+Ireneusz
+Olchawski
+EodFiles endpoint changed
+2021-
+03-02
+1.14.3
+Ireneusz
+Olchawski
+EodFiles endpoint status changed
+2021-
+03-15
+1.15.0 Paweł Gamrot Add EKOTANK fleet
+2021-
+03-18
+1.15.1 Paweł Gamrot Products list mandatory for PA for EKOTANK
+Date Version Changed by Description of changes
+2021-
+03-31
+1.15.2 Maciej Wiosło Correction of odometer maximum value
+2021-
+04-19
+1.15.3 Maciej Wiosło Add fleetSpecificData field to transaction object
+2021-
+05-28
+1.16.0 Maciej Wiosło Add AVIA fleet
+2021-
+06-30
+1.17.0 Mateusz Sawczuk Add DCI fleet, Updated FleetCardsRange Model
+2021-
+11-22
+1.18.0
+Ireneusz
+Olchawski
+Added fields to partner and station
+2021-
+11-25
+1.19.0 Mateusz Sawczuk Added DKV restriction code to product model
+2022-
+01-04
+1.19.1
+Ireneusz
+Olchawski
+Added condition when not to send transaction to queue
+2022-
+01-05
+1.19.2
+Ireneusz
+Olchawski
+Added detailed desription on auth error
+2022-
+01-13
+1.19.3
+Ireneusz
+Olchawski
+Changed date taken in monitoring controller
+2022-
+02-10
+1.20.0 Mateusz Sawczuk
+Added handling for EMV transaction, created new terminal
+type, added CVC code to CardData
+2022-
+03-11
+1.21.0 Paweł Gamrot
+Fix inline data models
+Remove format binary for track2 and pinData
+add x-enum-varnames for integer enums
+2022-
+05-10
+1.22.0 Maciej Wiosło
+Add IQCARD fleet
+Add example of UTA transaction without CVC for terminal
+www
+Two step authorisation for indoor terminal enabled
+2022-
+09-21
+1.23.0 Seweryn Krajewski Tokenization for AVIA card added
+2022-
+10-21
+1.24.0 Seweryn Krajewski
+New response code 923
+AdditionalTrack in customerData
+New fleets: MORGAN, DIESEL24, HOYER
+Fleets
+Fleets supported by FleetAPI :
+UTA
+DKV
+EUROWAG
+E100
+LOTOS
+EKOTANK
+AVIA
+DCI
+IQCARD
+MORGAN
+DIESEL24
+HOYER
+Fleet Parameters
+The table below presents parameters for fleets:
+Fleet Name Description
+UTA ACTIVE Fleet activity
+UTA CARD_ACCEPTOR_ID Station ID (card acceptor ID, ISO8583-42)
+UTA SUPPLIER_NAME
+Partner (supplier) name in UTA system (used in
+settlement file)
+UTA SUPPLIER_ID
+Partner (supplier) ID in UTA system (used in
+settlement file)
+DKV ACTIVE Fleet activity
+DKV CARD_ACCEPTOR_ID Station ID (card acceptor ID, ISO8583-42)
+DKV SUPPLIER_NAME
+Partner (supplier) name in DKV system (used in
+settlement file)
+DKV SUPPLIER_ID
+Partner (supplier) ID in DKV system (used in
+settlement file)
+DKV EOD_FILE_NAME_FORMAT Settlement file name format
+EUROWAG ACTIVE Fleet activity
+EUROWAG CARD_ACCEPTOR_ID Station ID (card acceptor ID, ISO8583-42)
+EUROWAG SUPPLIER_NAME
+Partner (supplier) name in EUROWAG system
+(used in settlement file)
+EUROWAG SUPPLIER_ID
+Partner (supplier) ID in EUROWAG system (used
+in settlement file)
+E100 ACTIVE Fleet activity
+E100 CARD_ACCEPTOR_ID Station ID (card acceptor ID, ISO8583-42)
+E100 SUPPLIER_NAME
+Partner (supplier) name in E100 system (used
+in settlement file)
+E100 SUPPLIER_ID
+Partner (supplier) ID in E100 system (used in
+settlement file)
+LOTOS ACTIVE Fleet activity
+LOTOS CARD_ACCEPTOR_ID
+Station/Toll point ID (card acceptor ID,
+ISO8583-42)
+LOTOS SUPPLIER_NAME
+Partner (supplier) name in LOTOS system (used
+in settlement file)
+LOTOS SUPPLIER_ID
+Partner (supplier) ID in LOTOS system (used in
+settlement file)
+EKOTANK ACTIVE Fleet activity
+EKOTANK CARD_ACCEPTOR_ID
+Station/Toll point ID (card acceptor ID,
+ISO8583-42)
+Fleet Name Description
+EKOTANK SUPPLIER_NAME
+Partner (supplier) name in EKOTANK system
+(used in settlement file)
+EKOTANK SUPPLIER_ID
+Partner (supplier) ID in EKOTANK system (used
+in settlement file)
+AVIA ACTIVE Fleet activity
+AVIA CARD_ACCEPTOR_ID
+Station/Toll point ID (card acceptor ID,
+ISO8583-42)
+AVIA SUPPLIER_NAME
+Partner (supplier) name in AVIA system (used in
+settlement file)
+AVIA SUPPLIER_ID
+Partner (supplier) ID in AVIA system (used in
+settlement file)
+DCI ACTIVE Fleet activity
+DCI CARD_ACCEPTOR_ID
+Station/Toll point ID (card acceptor ID,
+ISO8583-42)
+DCI SUPPLIER_NAME
+Partner (supplier) name in DCI system (used in
+settlement file)
+DCI SUPPLIER_ID
+Partner (supplier) ID in DCI system (used in
+settlement file)
+IQCARD ACTIVE Fleet activity
+IQCARD CARD_ACCEPTOR_ID
+Station/Toll point ID (card acceptor ID,
+ISO8583-42)
+IQCARD SUPPLIER_NAME
+Partner (supplier) name in IQCARD system
+(used in settlement file)
+IQCARD SUPPLIER_ID
+Partner (supplier) ID in IQCARD system (used in
+settlement file)
+MORGAN ACTIVE Fleet activity
+MORGAN CARD_ACCEPTOR_ID
+Station/Toll point ID (card acceptor ID,
+ISO8583-42)
+MORGAN SUPPLIER_NAME
+Partner (supplier) name in MORGAN system
+(used in settlement file)
+MORGAN SUPPLIER_ID
+Partner (supplier) ID in MORGAN system (used
+in settlement file)
+DIESEL24 ACTIVE Fleet activity
+DIESEL24 CARD_ACCEPTOR_ID
+Station/Toll point ID (card acceptor ID,
+ISO8583-42)
+DIESEL24 SUPPLIER_NAME
+Partner (supplier) name in DIESEL24 system
+(used in settlement file)
+Fleet Name Description
+DIESEL24 SUPPLIER_ID
+Partner (supplier) ID in DIESEL24 system (used
+in settlement file)
+HOYER ACTIVE Fleet activity
+HOYER CARD_ACCEPTOR_ID
+Station/Toll point ID (card acceptor ID,
+ISO8583-42)
+HOYER SUPPLIER_NAME
+Partner (supplier) name in HOYER system (used
+in settlement file)
+HOYER SUPPLIER_ID
+Partner (supplier) ID in HOYER system (used in
+settlement file)
+Name Description Default value Allowed values
+TIMEZONE Partner timezone Europe/Warsaw
+Europe/Warsaw
+Europe/Budapest
+Europe/Stockholm
+Europe/Dublin
+Europe/London
+Europe/Amsterdam
+Europe/Brussels
+Europe/Luxembourg
+Europe/Berlin
+Europe/Paris
+Europe/Vienna
+Europe/Copenhagen
+Europe/Madrid
+Europe/Ljubljana
+Europe/Bratislava
+Europe/Rome
+Europe/Prague
+Europe/Lisbon
+Europe/Vilnius
+Europe/Tallinn
+Europe/Belfast
+MAX_BATCH_TRANSACTIONS
+Maximum count of
+transaction in batch
+100
+DEFAULT_RESPONSE_LANG
+Default response
+language for
+partner
+pl
+pl
+en
+hu
+Global parameters of partner, station and terminal
+The table below presents global parameters for partner, station and terminal:
+Mark Description
+L Liters
+W Weight (in kilograms)
+Q Quantity
+Products
+Unified products are defined in the system (translation into products appropriate for a given fleet
+will take place inside the system). The list of supported products is provided by calling GET
+/products .
+Units measures of product
+The following units of measurement are available:
+Authorization
+Levels
+The user is assigned to one of the levels:
+group
+client
+partner
+station
+Access rights
+Each user can have a combination of access rights on the specified level:
+create (1)
+read (2)
+write (4)
+delete (8)
+REST method access rights
+Each of the access rights corresponds to the REST methods:
+create - POST
+read - GET
+write - PUT
+delete - DELETE
+Others
+The user can add a new user only to the lower level
+Each added user gets the read right for higher levels (in his branch), and
+the same rights on
+the same and lower levels as the adding user.
+The user can only change his password
+The user can edit (deactivate, change permissions)
+users only at lower levels as long as it has
+write permissions
+on the lower level
+Each user has the read permission to URI /fleets and /products
+User at the level group , client and partner (having the right of access
+create on these
+levels) can add the manual transactions registration right
+Examples
+Login using JWT
+Request data:
+Response data:
+Transactions
+For the servicing of fleet cards, the API will support the following operations:
+{
+"username": "userName",
+"password": "strongPassword"
+}
+{
+"authorizationToken": {
+"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
+"expires": "2021-01-12T08:55:28.375Z"
+},
+"refreshToken": {
+"token": "ayJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ8",
+"expires": "2021-01-12T08:55:28.375Z"
+},
+"loggedUserContext": {
+"userId": 1,
+"login": "userName"
+}
+}
+id ids name description
+1 HS handshake
+Handshake operation - The operation tests the
+availability of fleet servers
+2 SO sale online
+Sale online operation - The operation is used to
+authorize sales in indoor terminals
+3 PA preauthorization
+Preautorization operation - The pre-authorization
+operation is used to block funds on the card holder's
+account for refueling with an outdoor terminal (optionally
+allowed with an indoor terminal)
+4 AA
+authorization
+advice
+Finantial advice operation - The completion operation
+finalizes previously approved pre-authorization by
+transferring the final sales amount to the server.
+Completion amount cannot be higher then 101% of
+amount approved in the pre-authorization operation. In
+case of offline in indoor terminal, this operation is used to
+report offline operations authorized via the telephone
+line. In this case, an authorization code obtained in the
+IVR system is required
+5 RV reversal
+Cancellation - The cancellation operation is performed
+by the terminal in order to send information to the card
+authorization system about improperly completed
+financial operation (preauthorization / online sale) or
+manual cancellation of the transaction at the service
+station
+6 BL balance
+Card balance - The balance operation return maximum
+funds and the valid products list for card
+7 PC pin change
+Pin change - The operation change users card Pin, only
+available to fleets that support it (EKOTANK)
+8 TC tokenization
+Tokenization of card - Operation generates token for
+card (available for avia card only)
+Retransmissions
+In case of absence of a response to the query (eg. timeout), the terminal side is obliged to repeat
+certain operations (reversal, authorization advice) until acceptance by FleetAPI.
+In the case of
+retransmission, the field retry is set to 1 and the value in transmissionDateTime is updated,
+the rest of the fields are not changed.
+Request data
+Required fields (M-required (mandatory), O-not required (optional), C-dependent
+(conditional)) of
+the Transaction object depending on the transaction type
+( TransactionType ) for URI
+/terminals/fleets/{fleetName}/transactions
+If the field in the table below is not listed, it means that it is a field received or for all types of
+transactions the maturity of this field is O .
+Transaction type
+Field
+1
+HS
+2
+SO
+3
+PA
+4
+AA
+5
+RV
+6
+BL
+7
+PC
+8
+TC
+Description
+transactionId M M M M M M M M
+batchId O O O O O O O O
+Mandatory for endpoint
+/terminals/fleets/{fleetName}/transactions
+type M M M M M M M M
+retry M M M M M M M M For operation 1, 2, 3, 6 and 8 always 0
+fleet M M M M M M M M
+transactionDateTime O M M M M M M M
+transmissionDateTime M M M M M M M M
+amount O M M M M O O O
+cardData O M M M M M M M
+currencyCode O M M M M M O O
+pinData O C M O O M M M For 2 not mandatory for toll point (MCC = 4784)
+authorizationCode O O O M O O O O
+For operation 4 in case of voice authorisation
+this field must be set to a value gain in phone
+authorisation system
+customerData O M M M O M O O
+products O M C M O O O O For 3 and for fleet EKOTANK field is mandatory
+originalTransaction O O O C M O O O
+Mandatory for operation 4 in case of
+preathorisation completion
+reversalReason O O O O M O O O
+gateNumber O C O O O O O O For 2 mandatory for toll point (MCC = 4784)
+newPinData O O O O O O M O
+Response data
+Fields obtained in response to the transaction (E-echo from the data sent, O-not required
+(optional), C-dependent
+(conditional)):
+Transaction type
+Field
+1
+HS
+2
+SO
+3
+PA
+4
+AA
+5
+RV
+6
+BL
+7
+PC
+8
+TC
+Description
+transactionId E E E E E E E E
+transactionDateTime O E E E E E E E
+transmissionDateTime M M M M M M M M
+response M M M M M M M M
+authorizationCode O M M E O M O M
+allowedProducts O C C O O M O O
+Field mandatory in response to 2
+if not allowed product is present
+on product list in request.
+Mandatory in response to 3 with
+a list of allowed products (empty
+list means there are no
+restrictions for product code and
+all products defined in product
+table can be purchased)
+amount O O M O O C O O
+Present in 3 (available
+preauthorisation amount) in 6
+field is available (card limit) if
+card has limit
+originalAmount O O M O O O O O
+Original amount of
+preauthorisation (from request)
+requiredCustomerData O C C O O O O M
+Field is present if in request
+Transaction.customerData are
+missing some required fields or
+in response to tokenization
+fleetSpecificData O O O O O O O O
+This field is present if fleet
+service returns specific data
+(detailed description in the Fleet
+specific data section)
+newCardToken O O O O O O O M
+This field is present for
+tokenization only
+Fleet specific data
+Available fleet specific data for fleets:
+UTA - no specific data
+DKV - no specific data
+EUROWAG - no specific data
+E100 - no specific data
+LOTOS - no specific data
+EKOTANK - specific data:
+AddData
+AddAmount
+Contractor
+Limits.DayFuelQuan
+Limits.DayOtherAmount
+Limits.DayVisit
+Limits.Data
+Limits.MonthAllAmount
+Limits.MonthFuelQuan
+Limits.MonthOtherAmount
+AVIA - no specific data
+DCI - no specific data
+IQCARD - no specific data
+Sample values of queries and responses
+1 HS Handshake
+Example 1
+Approved handshake
+Request data:
+Response data:
+Example 2
+Required data is missing in the data sent
+Request data:
+Response data:
+2 SO Sale online
+{
+"transactionId": 12,
+"batchId": 2,
+"type": 1,
+"retry": 0,
+"fleet": "UTA",
+"transmissionDateTime": "2017-04-12T23:20:50",
+}
+{
+"transactionId": 12,
+"transmissionDateTime": "2017-04-12T23:20:55",
+"response": {
+"code": 800
+}
+}
+{
+"type": 1,
+"retry": 0
+}
+{
+"code": 3,
+"message": "Błędna wartość body"
+}
+Example 1
+Request data:
+Response data:
+{
+"transactionId": 13,
+"batchId": 5,
+"type": 2,
+"fleet": "UTA",
+"retry": 0,
+"transactionDateTime": "2017-04-13T15:10:02",
+"transmissionDateTime": "2017-04-13T15:10:03",
+"amount": 10000,
+"cardData": {
+"track2Data":
+"36333632303034353637383933313635393D31383039303030303234393030303030303030",
+"pan": "63620045678931659",
+},
+"currencyCode": "985",
+"pinData": {
+"pinBlock": "45117B1D1628FD8F",
+"pinBlockKey": "667C2E5B6C7314315B1F451E2E6E5B52"
+},
+"customerData": {
+"odometer": 12000,
+"plateNumber": "XXX1234",
+},
+"products": [
+{
+"productId": 13,
+"quantity": 1200,
+"price": 450,
+"amount": 5400,
+"internalProduct": {
+"name": "Benzyna Pb98",
+"productId": "12332"
+}
+}
+]
+}
+{
+"transactionId": 13,
+"transactionDateTime": "2017-04-13T15:10:02",
+"transmissionDateTime": "2017-04-13T15:10:03",
+"response": {
+"code": 0,
+"message": "Akceptacja"
+}
+"authorizationCode": "AQW123"
+}
+Example 2
+Request data for UTA transaction with cvc:
+Response data:
+{
+"transactionId": 23,
+"batchId": 1,
+"type": 2,
+"fleet": "UTA",
+"retry": 0,
+"transactionDateTime": "2022-03-10T10:31:13.386+01:00",
+"transmissionDateTime": "2022-03-10T10:31:14.3252837+01:00",
+"amount": 400,
+"cardData": {
+"pan": "63620045678931659",
+"expirationDate": "1122",
+"cvc": "092"
+},
+"currencyCode": "985",
+"customerData": {
+"odometer":12888
+},
+"products": [
+{
+"productId": 88,
+"quantity": 100,
+"price": 400,
+"amount": 400,
+"internalProduct": {
+"name": "Parking fee",
+"productId": "05410"
+}
+}
+]
+}
+{
+"transactionId": 82,
+"batchId": 1,
+"type": 2,
+"retry": 0,
+"fleet": "UTA",
+"transactionDateTime": "2022-03-10T10:31:13.386+01:00",
+"transmissionDateTime": "2022-03-10T10:31:14.3252837+01:00",
+"amount": 400,
+"cardData": {
+"pan": "63620045678931659",
+"expirationDate": "1122",
+"entryMode": 3,
+"cvc": "092"
+},
+"currencyCode": "985",
+"response": {
+"code": 0,
+"message": "Zaakceptowano"
+Example 3
+Request data for UTA transaction without cvc:
+Response data:
+},
+"authorizationCode": "307218",
+"customerData": {
+"odometer": 12888
+},
+"products": [
+{
+"productId": 88,
+"quantity": 100,
+"price": 400,
+"amount": 400,
+"internalProduct": {
+"name": "Parking fee",
+"productId": "05410"
+}
+}
+]
+}
+{
+"transactionId": 3274,
+"batchId": 1,
+"type": 2,
+"fleet": "UTA",
+"retry": 0,
+"transactionDateTime": "2022-04-15T10:03:11.569+02:00",
+"transmissionDateTime": "2022-04-15T10:03:11.569+02:00",
+"amount": 400,
+"cardData": {
+"pan": "70600045678940000",
+"expirationDate": "1122"
+"entryMode": 3
+},
+"currencyCode": "985",
+"customerData":
+{
+"odometer":12888
+},
+"products": [
+{
+"productId": 88,
+"quantity": 100,
+"price": 400,
+"amount": 400,
+"internalProduct": {
+"name": "Parking fee",
+"productId": "05410"
+}
+}
+]
+}
+Example 4
+Request data for AVIA transaction with token:
+{
+"transactionId": 3273,
+"batchId": 1,
+"type": 2,
+"retry": 0,
+"fleet": "UTA",
+"transactionDateTime": "2022-04-15T10:03:11.569+02:00",
+"transmissionDateTime": "2022-04-15T10:03:12.1462904+02:00",
+"amount": 400,
+"currencyCode": "985",
+"response": {
+"code": 0,
+"message": "Zaakceptowano"
+},
+"authorizationCode": "377923",
+"customerData": {
+"odometer": 12888
+},
+"products": [
+{
+"productId": 88,
+"quantity": 100,
+"price": 400,
+"amount": 400,
+"internalProduct": {
+"name": "Parking fee",
+"productId": "05410"
+}
+}
+]
+}
+{
+"transactionId": 3274,
+"type": 2,
+"fleet": "AVIA",
+"retry": 0,
+"transactionDateTime": "2022-09-15T10:03:11.569+02:00",
+"transmissionDateTime": "2022-09-15T10:03:21.569+02:00",
+"amount": 400,
+"cardData": {
+"entryMode": 6,
+"cardToken": {
+"token":
+"QUMzNDIzNDU2NzIwMjQwMzMxMjM1OTU5QUJBQkFCQUJBQkFCQUJBQkFCQUJBQkFCQUJBQkFCQUJBQUF
+BQUFBQUJCQkJCQkJCQkI=",
+"expDate": "2024-04-30T23:59:59+00:00"
+}
+},
+"currencyCode": "985",
+"customerData":
+{
+"odometer":12888
+Response data:
+Example 5
+Request data for HOYER transaction with two-system card:
+},
+"products": [
+{
+"productId": 88,
+"quantity": 100,
+"price": 400,
+"amount": 400,
+"internalProduct": {
+"name": "Parking fee",
+"productId": "05410"
+}
+}
+]
+}
+{
+"transactionId": 3273,
+"type": 2,
+"retry": 0,
+"fleet": "AVIA",
+"transactionDateTime": "2022-04-15T10:03:11.569+02:00",
+"transmissionDateTime": "2022-04-15T10:04:12.1462904+02:00",
+"amount": 400,
+"currencyCode": "985",
+"response": {
+"code": 0,
+"message": "Zaakceptowano"
+},
+"authorizationCode": "377923"
+}
+{
+"transactionId": 3275,
+"type": 2,
+"fleet": "HOYER",
+"retry": 0,
+"transactionDateTime": "2022-09-15T10:03:11.569+02:00",
+"transmissionDateTime": "2022-09-15T10:03:21.569+02:00",
+"amount": 400,
+"cardData": {
+"track2Data":
+"373030353530343536373839333136353939393D31383039303030303234393030303030303030"
+},
+"currencyCode": "985",
+"customerData":
+{
+"odometer":12888,
+"additionalTrack":
+"373030353530343536373839333136353939303D31383039303030303234393030303030303030"
+},
+"products": [
+Response data:
+3 PA Preautorization
+Example 1
+Approved preautorization
+Request data:
+{
+"productId": 88,
+"quantity": 100,
+"price": 400,
+"amount": 400,
+"internalProduct": {
+"name": "Parking fee",
+"productId": "05410"
+}
+}
+]
+}
+{
+"transactionId": 3273,
+"type": 2,
+"retry": 0,
+"fleet": "HOYER",
+"transactionDateTime": "2022-04-15T10:03:11.569+02:00",
+"transmissionDateTime": "2022-04-15T10:04:12.1462904+02:00",
+"amount": 400,
+"currencyCode": "985",
+"response": {
+"code": 0,
+"message": "Zaakceptowano"
+},
+"authorizationCode": "377923"
+}
+{
+"transactionId": 3565,
+"batchId": 4313,
+"type": 3,
+"fleet": "DKV",
+"retry": 0,
+"transactionDateTime": "2022-05-10T07:57:33",
+"transmissionDateTime": "2022-05-10T07:57:33",
+"amount": 25600,
+"cardData": {
+"track2Data":
+"3730343331303031313233343536373839D32323131303039303030303030303030303030",
+"pan": "70431001123456789",
+"expirationDate": "1122"
+},
+"currencyCode": "985",
+"pinData": {
+"pinBlock": "C9DDBCB1234ABCDE",
+"pinBlockKey": "7A4651234ABCDE1234ABCDE1234ABCDE"
+},
+Response data:
+4 AA Authorization advice
+Example 1
+Approved authorization advice (to previously approved pre-authorization - 3 PA - Example 1)
+Request data:
+"customerData": {
+"odometer": 128512
+}
+}
+{
+"transactionId": 3565,
+"batchId": 4313,
+"type": 3,
+"retry": 0,
+"fleet": "DKV",
+"transactionDateTime": "2022-05-10T09:57:33.542+02:00",
+"transmissionDateTime": "2022-05-10T09:56:30.0381169+02:00",
+"amount": 25600,
+"cardData": {
+"track2Data":
+"3730343331303031313233343536373839D32323131303039303030303030303030303030",
+"pan": "70431001123456789",
+"expirationDate": "1122",
+"entryMode": 3
+},
+"currencyCode": "985",
+"response": {
+"code": 0,
+"message": "Zaakceptowano"
+},
+"authorizationCode": "145356",
+"customerData": {
+"odometer": 128512
+},
+"allowedProducts":
+[6,9,10,12,13,17,22,20,28,30,32,33,36,38,42,48,58,64,78,80,81,87,85,90,88,95,83,
+94,96,1001,1002,1004,1003,1005],
+"originalAmount": 25600
+}
+{
+"transactionId": 3566,
+"batchId": 4313,
+"type": 4,
+"fleet": "DKV",
+"retry": 0,
+"transactionDateTime": "2022-05-10T08:49:34",
+"transmissionDateTime": "2022-05-10T08:49:34",
+"amount": 25600,
+"cardData": {
+"track2Data":
+"3730343331303031313233343536373839D32323131303039303030303030303030303030",
+Response data:
+"pan": "70431001123456789",
+"expirationDate": "1122"
+},
+"currencyCode": "985",
+"customerData": {
+"odometer": 128512
+},
+"products": [
+{
+"productId": 38,
+"quantity": 5120,
+"price": 500,
+"amount": 25600,
+"internalProduct": {
+"name": "Benzyna Pb98",
+"productId": "12332"
+}
+}
+],
+"authorizationCode": "145356",
+"originalTransaction": {
+"transactionId": 3565,
+"transactionDateTime": "2022-05-10T09:57:33.542+02:00"
+}
+}
+{
+"transactionId": 3566,
+"batchId": 4313,
+"type": 4,
+"retry": 0,
+"fleet": "DKV",
+"transactionDateTime": "2022-05-10T10:49:34.998+02:00",
+"transmissionDateTime": "2022-05-10T10:48:30.6690412+02:00",
+"amount": 25600,
+"cardData": {
+"track2Data":
+"3730343331303031313233343536373839D32323131303039303030303030303030303030",
+"pan": "70431001123456789",
+"expirationDate": "1122",
+"entryMode": 3
+},
+"currencyCode": "985",
+"response": {
+"code": 901,
+"message": "Dopełnienie uznane"
+},
+"authorizationCode": "145356",
+"customerData": {
+"odometer": 12000
+},
+"products": [
+{
+"productId": 38,
+"quantity": 5120,
+6 BL Card Balance
+Example 1
+Approved card balance
+Request data:
+Response data:
+"price": 500,
+"amount": 25600,
+"internalProduct": {
+"name": "Benzyna Pb98",
+"productId": "12332"
+}
+}
+],
+"originalTransaction": {
+"transactionId": 3565,
+"transactionDateTime": "2022-05-10T09:57:33.542+02:00"
+}
+}
+{
+"transactionId": 6428,
+"batchId": 1993,
+"type": 6,
+"fleet": "DKV",
+"retry": 0,
+"transactionDateTime": "2020-02-21T10:46:08",
+"transmissionDateTime": "2020-02-21T10:46:14",
+"cardData": {
+"track2Data":
+"37303433313030313030313138373831343D32323131303039303030303030303030303030",
+"pan": "70431001001187814",
+"expirationDate": "1122"
+},
+"currencyCode": "985",
+"pinData": {
+"pinBlock": "C8DDBCB1593F9EAC",
+"pinBlockKey": "7A46522A486917052B0B5967520E2748"
+}
+}
+{
+"transactionId": 6428,
+"batchId": 1993,
+"type": 6,
+"retry": 0,
+"fleet": "DKV",
+"transactionDateTime": "2020-02-21T10:46:08.153+01:00",
+"transmissionDateTime": "2020-02-21T10:46:14.5560346+01:00",
+"amount": 8000,
+"cardData": {
+"track2Data":
+"37303433313030313030313138373831343D32323131303039303030303030303030303030",
+"pan": "70431001001187814",
+"expirationDate": "1122"
+Example 2
+Approved card balance for UTA transaction with cvc
+Request data:
+Response data:
+},
+"currencyCode": "985",
+"response": {
+"code": 0,
+"message": "Approved"
+},
+"authorizationCode": "337282",
+"allowedProducts": [
+6, 9, 10, 12, 13, 16, 19, 30, 32, 33, 36, 38, 58, 64, 78, 80, 85, 88, 95,
+94
+]
+}
+{
+"transactionId": 83,
+"batchId": 1,
+"type": 6,
+"fleet": "UTA",
+"retry": 0,
+"transactionDateTime": "2022-03-10T10:31:13.386+01:00",
+"transmissionDateTime": "2022-03-10T10:52:06.6803394+01:00",
+"cardData": {
+"pan": "63620045678931659",
+"expirationDate": "1122",
+"cvc": "092"
+},
+"currencyCode": "985"
+}
+{
+"transactionId": 83,
+"batchId": 1,
+"type": 6,
+"retry": 0,
+"fleet": "UTA",
+"transactionDateTime": "2022-03-10T10:31:13.386+01:00",
+"transmissionDateTime": "2022-03-10T10:52:06.6803394+01:00",
+"amount": 923719,
+"cardData": {
+"pan": "63620045678931659",
+"expirationDate": "1122",
+"entryMode": 3,
+"cvc": "092"
+},
+"currencyCode": "985",
+"response": {
+"code": 0,
+"message": "Zaakceptowano"
+},
+"authorizationCode": "000000",
+"allowedProducts": [
+8 TC Tokenization of card
+Example 1
+Approved card tokenization
+Request data:
+Response data:
+9, 28, 10, 33, 12, 24, 35, 30, 36, 32, 38, 3, 42, 48, 6, 13, 20, 21, 94,
+17
+]
+}
+{
+"transactionId": 6428,
+"type": 8,
+"fleet": "AVIA",
+"retry": 0,
+"transactionDateTime": "2022-02-21T10:46:08",
+"transmissionDateTime": "2022-02-21T10:48:14",
+"cardData": {
+"pan": "70431001001187814",
+"expirationDate": "1122",
+"entryMode" = 4
+},
+"currencyCode": "985",
+"pinData": {
+"pinBlock": "C8DDBCB1593F9EAC",
+"pinBlockKey": "7A46522A486917052B0B5967520E2748"
+}
+}
+{
+"transactionId": 6428,
+"type": 8,
+"retry": 0,
+"fleet": "AVIA",
+"transactionDateTime": "2020-02-21T10:46:08.153+01:00",
+"transmissionDateTime": "2020-02-21T10:46:54.5560346+01:00",
+"response": {
+"code": 0,
+"message": "Approved"
+},
+"authorizationCode": "337282",
+"newCardToken": {
+"token":
+"QUMzNDIzNDU2NzIwMjQwMzMxMjM1OTU5QUJBQkFCQUJBQkFCQUJBQkFCQUJBQkFCQUJBQkFCQUJBQUF
+BQUFBQUJCQkJCQkJCQkI=",
+"expDate": "2024-04-30T23:59:59+00:00"
+},
+"requiredCustomerData": [
+{
+"type": 1,
+"pattern": "^[0-9]{1,7}$"
+},
+{
+"type": 2,
+Type Name Description Schema
+Body
+loginModel
+required
+Object with login data Login
+HTTP Code Description Schema
+200 Login Success Authentication
+default Error code (400, 500) ResponseCode
+Version information
+Version : 1.24.0
+URI scheme
+Host : testfleetapi.dmt.com.pl
+BasePath : /FleetApiTest/v1
+Schemes : HTTPS
+Consumes
+application/json
+Produces
+application/json
+Paths
+Authenticates user and returns token data
+Parameters
+Responses
+Tags
+Authentication
+"pattern": "^[\\p{L}0-9-& ]{1,15}$"
+}
+]
+}
+POST /authentication/login
+HTTP Code Description Schema
+200 Login Success Authentication
+default Error code (400, 500) ResponseCode
+Type Name
+apiKey Bearer
+Type Name Description Schema
+Path
+clientId
+required
+Client identifier integer
+HTTP Code Description Schema
+200 OK Client
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Refreshes user's tokens
+Responses
+Tags
+Authentication
+Security
+Returns client data
+Parameters
+Responses
+Tags
+clients
+Updates client data
+GET /authentication/refreshTokens
+GET /clients/{clientId}
+PUT /clients/{clientId}
+Type Name Description Schema
+Path
+clientId
+required
+Client identifier integer
+Body
+client
+required
+Client data Client
+HTTP Code Description Schema
+200 OK No Content
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+clientId
+required
+Client identifier integer
+HTTP Code Description Schema
+200 OK No Content
+401 Incorrect identifier No Content
+Parameters
+Responses
+Tags
+clients
+Removes client
+Parameters
+Responses
+Tags
+clients
+Returns client global parameters
+DELETE /clients/{clientId}
+GET /clients/{clientId}/parameters
+Type Name Description Schema
+Path
+clientId
+required
+Client identifier integer
+HTTP Code Description Schema
+200 OK AllGlobalParameters
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+clientId
+required
+Client identifier integer
+Body
+globalParameters
+required
+Global parameters GlobalParameters
+HTTP Code Description Schema
+200 OK AllGlobalParameters
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Parameters
+Responses
+Tags
+clients
+Updates client global parameters
+Parameters
+Responses
+Tags
+clients
+PUT /clients/{clientId}/parameters
+Type Name Description Schema
+Path
+clientId
+required
+Client identifier integer
+Body
+partner
+required
+Partner data Partner
+HTTP Code Description Schema
+201 OK Partner
+default Error code (400, 500) ResponseCode
+Type Name Description Schema Default
+Path
+clientId
+required
+Client identifier integer
+Query
+limit
+optional
+the maximum amount to be returned integer 10
+Query
+name
+optional
+Partner name or part of the name to
+search for. Format like for
+LIKE operator in sql (% - any string, _-
+single character, etc.).
+string
+Query
+offset
+optional
+the starting index to return integer
+Query
+taxIdNumber
+optional
+Partner tax identification number or
+part of the tax identification number
+to be searched. Format like for
+LIKE operator in sql (% - any string, _-
+single character, etc.).
+string
+Creates and saves partner (supplier)
+Parameters
+Responses
+Tags
+clients
+Returns list of partners
+Parameters
+POST /clients/{clientId}/partners
+GET /clients/{clientId}/partners
+HTTP Code Description Schema
+200 OK PartnersPagedResponse
+default Error code (400, 500) ResponseCode
+Type Name Description Schema Default
+Path
+clientId
+required
+Client identifier integer
+Query
+limit
+optional
+the maximum amount to be returned integer 10
+Query
+name
+optional
+The username or part of the name to
+search for. Format like for
+LIKE operator in sql (% - any string, _-single
+character, etc.).
+string
+Query
+offset
+optional
+the starting index to return integer
+HTTP Code Description Schema
+200 OK UsersPagedResponse
+default Error code (400, 500) ResponseCode
+Responses
+Tags
+clients
+Returns list of users
+Parameters
+Responses
+Tags
+clients
+Returns user data
+GET /clients/{clientId}/users
+GET /clients/{clientId}/users/{userId}
+Type Name Description Schema
+Path
+clientId
+required
+Client identifier integer
+Path
+userId
+required
+User identifier integer
+HTTP Code Description Schema
+200 OK User
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Type Name Description Schema Default
+Query
+limit
+optional
+the maximum amount to be returned integer 10
+Query
+name
+optional
+The name of the fleet or part of the name to
+be searched. Format like for
+LIKE operator in sql (% - any string, _-single
+character, etc.).
+string
+Query
+offset
+optional
+the starting index to return integer
+HTTP Code Description Schema
+200 OK FleetsPagedResponse
+default Error code (400, 500) ResponseCode
+Parameters
+Responses
+Tags
+clients
+Returns list of supported fleets
+Parameters
+Responses
+GET /fleets
+Type Name Description Schema
+Path
+fleetName
+required
+Fleet identifier string
+HTTP Code Description Schema
+200 OK Fleet
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Body
+group
+required
+Group data Group
+HTTP Code Description Schema
+201 OK Group
+default Error code (400, 500) ResponseCode
+Tags
+fleets
+Returns fleet data
+Parameters
+Responses
+Tags
+fleets
+Creates and saves a group
+Parameters
+Responses
+GET /fleets/{fleetName}
+POST /groups
+Type Name Description Schema Default
+Query
+limit
+optional
+the maximum amount to be returned integer 10
+Query
+name
+optional
+The name of the group or part of the name
+to be searched. Format like for
+LIKE operator in sql (% - any string, _-single
+character, etc.).
+string
+Query
+offset
+optional
+the starting index to return integer
+HTTP Code Description Schema
+200 OK GroupsPagedResponse
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+groupId
+required
+Group identifier integer
+Tags
+groups
+Returns list of groups
+Parameters
+Responses
+Tags
+groups
+Returns group data
+Parameters
+Responses
+GET /groups
+GET /groups/{groupId}
+HTTP Code Description Schema
+200 OK Group
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+groupId
+required
+Group identifier integer
+Body
+group
+required
+Group data Group
+HTTP Code Description Schema
+200 OK No Content
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+groupId
+required
+Group identifier integer
+Tags
+groups
+Updates group data
+Parameters
+Responses
+Tags
+groups
+Removes group
+Parameters
+PUT /groups/{groupId}
+DELETE /groups/{groupId}
+HTTP Code Description Schema
+200 OK No Content
+401 Incorrect identifier No Content
+Type Name Description Schema
+Path
+groupId
+required
+Group identifier integer
+Body
+client
+required
+Client data Client
+HTTP Code Description Schema
+201 OK Client
+default Error code (400, 500) ResponseCode
+Responses
+Tags
+groups
+Creates and saves client
+Parameters
+Responses
+Tags
+groups
+Returns list of clients
+Parameters
+POST /groups/{groupId}/clients
+GET /groups/{groupId}/clients
+Type Name Description Schema Default
+Path
+groupId
+required
+Group identifier integer
+Query
+limit
+optional
+the maximum amount to be returned integer 10
+Query
+name
+optional
+The customer's name or part of the name
+to search for. Format like for
+LIKE operator in sql (% - any string, _-single
+character, etc.).
+string
+Query
+offset
+optional
+the starting index to return integer
+HTTP Code Description Schema
+200 OK ClientsPagedResponse
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+groupId
+required
+Group identifier integer
+HTTP Code Description Schema
+200 OK AllGlobalParameters
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Responses
+Tags
+groups
+Returns global parameter
+Parameters
+Responses
+GET /groups/{groupId}/parameters
+Type Name Description Schema
+Path
+groupId
+required
+Group identifier integer
+Body
+globalParameters
+required
+Global parameters GlobalParameters
+HTTP Code Description Schema
+200 OK AllGlobalParameters
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Type Name Description Schema Default
+Path
+groupId
+required
+Group identifier integer
+Query
+limit
+optional
+the maximum amount to be returned integer 10
+Query
+name
+optional
+The username or part of the name to
+search for. Format like for
+LIKE operator in sql (% - any string, _-single
+character, etc.).
+string
+Query
+offset
+optional
+the starting index to return integer
+Tags
+groups
+Updates global parameters
+Parameters
+Responses
+Tags
+groups
+Returns list of users
+Parameters
+PUT /groups/{groupId}/parameters
+GET /groups/{groupId}/users
+HTTP Code Description Schema
+200 OK UsersPagedResponse
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+groupId
+required
+Group identifier integer
+Path
+userId
+required
+User identifier integer
+HTTP Code Description Schema
+200 OK User
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+partnerId
+required
+Partner identifier integer
+Responses
+Tags
+groups
+Returns user data
+Parameters
+Responses
+Tags
+groups
+Returns partner data
+Parameters
+GET /groups/{groupId}/users/{userId}
+GET /partners/{partnerId}
+HTTP Code Description Schema
+200 OK Partner
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+partnerId
+required
+Partner identifier integer
+Body
+partner
+required
+Partner data Partner
+HTTP Code Description Schema
+200 OK No Content
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+partnerId
+required
+Partner identifier integer
+Responses
+Tags
+partners
+Updates partner (supplier) data
+Parameters
+Responses
+Tags
+partners
+Removes partner (supplier)
+Parameters
+PUT /partners/{partnerId}
+DELETE /partners/{partnerId}
+HTTP Code Description Schema
+200 OK No Content
+401 Incorrect identifier No Content
+Type Name Description Schema
+Path
+fleetName
+required
+Fleet identifier string
+Path
+partnerId
+required
+Partner identifier integer
+HTTP Code Description Schema
+200 OK AllParameters
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Responses
+Tags
+partners
+Returns parameters
+Parameters
+Responses
+Tags
+partners
+Updates parameters
+Parameters
+GET /partners/{partnerId}/fleets/{fleetName}/parameters
+PUT /partners/{partnerId}/fleets/{fleetName}/parameters
+Type Name Description Schema
+Path
+fleetName
+required
+Fleet identifier string
+Path
+partnerId
+required
+Partner identifier integer
+Body
+parameters
+required
+Parameters Parameters
+HTTP Code Description Schema
+200 OK AllParameters
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+partnerId
+required
+Partner identifier integer
+HTTP Code Description Schema
+200 OK AllGlobalParameters
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Responses
+Tags
+partners
+Returns global parameters
+Parameters
+Responses
+Tags
+partners
+GET /partners/{partnerId}/parameters
+Type Name Description Schema
+Path
+partnerId
+required
+Partner identifier integer
+Body
+globalParameters
+required
+Global parameters GlobalParameters
+HTTP Code Description Schema
+200 OK AllGlobalParameters
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+partnerId
+required
+Partner identifier integer
+Body
+station
+required
+Fuel station data Station
+HTTP Code Description Schema
+201 OK Station
+default Error code (400, 500) ResponseCode
+Updates global parameters
+Parameters
+Responses
+Tags
+partners
+Creates and saves station
+Parameters
+Responses
+PUT /partners/{partnerId}/parameters
+POST /partners/{partnerId}/stations
+Type Name Description Schema Default
+Path
+partnerId
+required
+Partner identifier integer
+Query
+limit
+optional
+the maximum amount to be returned integer 10
+Query
+name
+optional
+The name of the station or part of the
+name to be searched. Format like for
+LIKE operator in sql (% - any string, _-
+single character, etc.).
+string
+Query
+offset
+optional
+the starting index to return integer
+HTTP Code Description Schema
+200 OK StationsPagedResponse
+default Error code (400, 500) ResponseCode
+Tags
+partners
+Returns list of partner's stations
+Parameters
+Responses
+Tags
+partners
+Returns list of user
+Parameters
+GET /partners/{partnerId}/stations
+GET /partners/{partnerId}/users
+Type Name Description Schema Default
+Path
+partnerId
+required
+Partner identifier integer
+Query
+limit
+optional
+the maximum amount to be returned integer 10
+Query
+name
+optional
+The username or part of the name to
+search for. Format like for
+LIKE operator in sql (% - any string, _-
+single character, etc.).
+string
+Query
+offset
+optional
+the starting index to return integer
+HTTP Code Description Schema
+200 OK UsersPagedResponse
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+partnerId
+required
+Partner identifier integer
+Path
+userId
+required
+User identifier integer
+HTTP Code Description Schema
+200 OK User
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Responses
+Tags
+partners
+Returns user data
+Parameters
+Responses
+GET /partners/{partnerId}/users/{userId}
+Type Name Description Schema Default
+Query
+countryCode
+optional
+Numeric country code ISO 3166-1, if
+parameter is not set then default
+value will be 616 (Poland).
+string "616"
+Query
+sort
+optional
+Sorting response rules. List of comma
+separated fields, each with a possible
+unary negative to imply descending
+sort order, example: sort=name,-
+activity. If sorting object have complex
+fields then there should be possible to
+sort by fields of complex field for
+example: status.date where status is
+field of Update object.
+string
+HTTP Code Description Schema
+200 OK Products
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Tags
+partners
+Returns list of supported products.
+Description
+The vatValue of the product is based on country code.
+Parameters
+Responses
+Tags
+products
+Returns list of product maping for fleets
+GET /products
+GET /products/fleets/{fleetName}
+Type Name Description Schema
+Path
+fleetName
+required
+Fleet identifier string
+HTTP Code Description Schema
+200 OK ProductsMapping
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+stationId
+required
+Station identifier integer
+HTTP Code Description Schema
+200 OK Station
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Parameters
+Responses
+Tags
+products
+Returns fuel station data
+Parameters
+Responses
+Tags
+stations
+Updates fuel station data
+GET /stations/{stationId}
+PUT /stations/{stationId}
+Type Name Description Schema
+Path
+stationId
+required
+Fuel station identifier integer
+Body
+station
+required
+Station data Station
+HTTP Code Description Schema
+200 OK No Content
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+stationId
+required
+Fuel station identifier integer
+HTTP Code Description Schema
+200 OK No Content
+401 Incorrect identifier No Content
+Parameters
+Responses
+Tags
+stations
+Removes station
+Parameters
+Responses
+Tags
+stations
+Returns station's parameters
+DELETE /stations/{stationId}
+GET /stations/{stationId}/fleets/{fleetName}/parameters
+Type Name Description Schema
+Path
+fleetName
+required
+Fleet identifier string
+Path
+stationId
+required
+Fuel station identifier integer
+HTTP Code Description Schema
+200 OK AllParameters
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+fleetName
+required
+Fleet identifier string
+Path
+stationId
+required
+Fuel station identifier integer
+Body
+parameters
+required
+Parameters Parameters
+HTTP Code Description Schema
+200 OK AllParameters
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Parameters
+Responses
+Tags
+stations
+Updates station's parameters
+Parameters
+Responses
+PUT /stations/{stationId}/fleets/{fleetName}/parameters
+Type Name Description Schema
+Path
+stationId
+required
+Fuel station identifier integer
+HTTP Code Description Schema
+200 OK AllGlobalParameters
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+stationId
+required
+Fuel station identifier integer
+Body
+globalParameters
+required
+Global parameters GlobalParameters
+HTTP Code Description Schema
+200 OK AllGlobalParameters
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Tags
+stations
+Returns global parameters
+Parameters
+Responses
+Tags
+stations
+Updates station parameters
+Parameters
+Responses
+GET /stations/{stationId}/parameters
+PUT /stations/{stationId}/parameters
+Type Name Description Schema
+Path
+stationId
+required
+Fuel station identifier integer
+Body
+terminal
+required
+Terminal data Terminal
+HTTP Code Description Schema
+201 OK Terminal
+default Error code (400, 500) ResponseCode
+Type Name Description Schema Default
+Path
+stationId
+required
+Fuel station identifier integer
+Query
+limit
+optional
+the maximum amount to be
+returned
+integer 10
+Query
+offset
+optional
+the starting index to return integer
+Query
+serialNumber
+optional
+The serial number of the terminal or
+part of the number to be searched.
+Such a format
+as for the LIKE operator in sql (% -
+any string, _ single sign etc.).
+string
+Tags
+stations
+Creates and saves terminal
+Parameters
+Responses
+Tags
+stations
+Returns station's terminal list
+Parameters
+POST /stations/{stationId}/terminals
+GET /stations/{stationId}/terminals
+HTTP Code Description Schema
+200 OK TerminalsPagedResponse
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+stationId
+required
+Fuel station identifier integer
+Body
+transaction
+required
+Manual transaction data ManualTransaction
+HTTP Code Description Schema
+201 OK TransactionResponse
+default Error code (400, 500) ResponseCode
+Responses
+Tags
+stations
+Creates and saves manual transaction on station's level
+(manual transaction)
+Parameters
+Responses
+Tags
+stations
+Returns station's user list
+Parameters
+POST /stations/{stationId}/transactions
+GET /stations/{stationId}/users
+Type Name Description Schema Default
+Path
+stationId
+required
+Fuel station identifier integer
+Query
+limit
+optional
+the maximum amount to be returned integer 10
+Query
+name
+optional
+The username or part of the name to
+search for. Format like for
+LIKE operator in sql (% - any string, _-
+single character, etc.).
+string
+Query
+offset
+optional
+the starting index to return integer
+HTTP Code Description Schema
+200 OK UsersPagedResponse
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+stationId
+required
+Fuel station identifier integer
+Path
+userId
+required
+User identifier integer
+HTTP Code Description Schema
+200 OK User
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Responses
+Tags
+stations
+Returns user data
+Parameters
+Responses
+GET /stations/{stationId}/users/{userId}
+Type Name Description Schema
+Body
+transaction
+required
+Transaction data EodTransaction
+HTTP Code Description Schema
+201 OK TransactionResponse
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+fleetName
+required
+Fleet identifier string
+Body
+transaction
+required
+Transaction data Transaction
+HTTP Code Description Schema
+201 OK Transaction
+default Error code (400, 500) ResponseCode
+Tags
+stations
+Creates and saves reconciliation for terminal (EOD) - single
+product in position (deprecated)
+Parameters
+Responses
+Tags
+terminals
+Creates and saves transaction
+Parameters
+Responses
+POST /terminals/eods
+POST /terminals/fleets/{fleetName}/transactions
+Type Name Description Schema
+Body
+transaction
+required
+Transaction data TransactionEod
+HTTP Code Description Schema
+201 OK TransactionResponse
+default Error code (400, 500) ResponseCode
+Type Name Description Schema Default
+Query
+eodFileName
+required
+EOD file name string
+Query
+fileLocalization
+optional
+File localizations:
+* 0 - main SFTP server
+enum () 0
+HTTP Code Description Schema
+201 OK EodFile
+default Error code (400, 500) ResponseCode
+Tags
+terminals
+Creates and saves reconciliation for terminal (EOD) - many
+products in one transaction.
+Parameters
+Responses
+Tags
+terminals
+Creates a request to process a reconciliation file located on
+SFTP server.
+Parameters
+Responses
+POST /terminals/transactions/eods
+POST /terminals/transactions/eods/eodfiles
+Type Name
+apiKey Bearer
+Type Name Description Schema
+Query
+eodFileId
+optional
+EOD file identifier integer
+Query
+eodFileName
+optional
+EOD file name string
+HTTP Code Description Schema
+200 OK EodFilesPagedResponse
+default Error code (400, 500) ResponseCode
+Type Name
+apiKey Bearer
+Tags
+terminals
+Security
+Get Eod files status. eodFileId or eodFileName can be
+used.
+Parameters
+Responses
+Tags
+terminals
+Security
+Returns terminal data
+GET /terminals/transactions/eods/eodfiles
+GET /terminals/{terminalId}
+Type Name Description Schema
+Path
+terminalId
+required
+Terminal identifier integer
+HTTP Code Description Schema
+200 OK Terminal
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+terminalId
+required
+Terminal identifier integer
+Body
+terminal
+required
+Terminal data Terminal
+HTTP Code Description Schema
+200 OK No Content
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Parameters
+Responses
+Tags
+terminals
+Updates terminal data
+Parameters
+Responses
+Tags
+terminals
+PUT /terminals/{terminalId}
+Type Name Description Schema
+Path
+terminalId
+required
+Terminal identifier integer
+HTTP Code Description Schema
+200 OK No Content
+401 Incorrect identifier No Content
+Type Name Description Schema
+Path
+fleetName
+required
+Fleet identifier string
+Path
+terminalId
+required
+Terminal identifier integer
+HTTP Code Description Schema
+200 OK AllParameters
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Removes terminal
+Parameters
+Responses
+Tags
+terminals
+Returns terminal's parameters
+Parameters
+Responses
+Tags
+terminals
+DELETE /terminals/{terminalId}
+GET /terminals/{terminalId}/fleets/{fleetName}/parameters
+Type Name Description Schema
+Path
+fleetName
+required
+Fleet identifier string
+Path
+terminalId
+required
+Terminal identifier integer
+Body
+parameters
+required
+Parameters Parameters
+HTTP Code Description Schema
+200 OK AllParameters
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Type Name Description Schema
+Path
+fleetName
+required
+Fleet identifier string
+Path
+terminalId
+required
+Terminal identifier integer
+Body
+transaction
+required
+Transaction data Transaction
+Updates terminal parameters
+Parameters
+Responses
+Tags
+terminals
+Creates and saves transaction
+Parameters
+PUT /terminals/{terminalId}/fleets/{fleetName}/parameters
+POST /terminals/{terminalId}/fleets/{fleetName}/transactions
+HTTP Code Description Schema
+201 OK Transaction
+default Error code (400, 500) ResponseCode
+Type Name
+apiKey Bearer
+Type Name Description Schema
+Path
+terminalId
+required
+Terminal identifier integer
+HTTP Code Description Schema
+200 OK AllGlobalParameters
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Responses
+Tags
+terminals
+Security
+Returns global parameters
+Parameters
+Responses
+Tags
+terminals
+Updates terminal parameters
+Parameters
+GET /terminals/{terminalId}/parameters
+PUT /terminals/{terminalId}/parameters
+Type Name Description Schema
+Path
+terminalId
+required
+Terminal identifier integer
+Body
+globalParameters
+required
+Global parameters GlobalParameters
+HTTP Code Description Schema
+200 OK AllGlobalParameters
+401 Incorrect identifier No Content
+default Error code (400, 500) ResponseCode
+Name Schema
+create
+optional
+boolean
+delete
+optional
+boolean
+read
+optional
+boolean
+write
+optional
+boolean
+Name Description Schema
+dateFrom
+required
+Date and time activity FROM
+string
+(dateTime)
+dateTo
+optional
+Date and time activity TO - empty value means always
+active
+string
+(dateTime)
+Responses
+Tags
+terminals
+Definitions
+AccessMode
+User rights
+ActivityPeriod
+Activity period
+Name Schema
+globalParameters
+optional
+GlobalParameters
+inheritedGlobalParameters
+optional
+GlobalParameters
+Name Schema
+inheritedParameters
+optional
+Parameters
+parameters
+optional
+Parameters
+Name Schema
+authorizationToken
+optional
+Token
+loggedUserContext
+optional
+LoggedUserContext
+refreshToken
+optional
+Token
+AllGlobalParameters
+Table of global parameters
+AllParameters
+Table of all parameters
+Authentication
+Authentication model - response for login action
+CardData
+An object representing the data of the fleet card
+Name Description Schema
+cardToken
+optional
+Card token CardToken
+cvc
+optional
+Card Verification Code
+Maximal length : 3
+Pattern : "^[0-9]{3}$"
+string
+entryMode
+optional
+Entry mode type by default set to 3(magstripe) EntryModeDataType
+expirationDate
+optional
+card expiry date (formt MMYY )
+Maximal length : 4
+Pattern : "^(0[1-9]\|1[0-2])([0-9]{2})$"
+string
+iccRelatedData
+optional
+Icc related data (HEXSTR) string
+pan
+optional
+card number (PAN)
+Maximal length : 19
+Pattern : "^[0-9]{1,19}$"
+string
+track2Data
+optional
+Track 2 value of a magstripe card (HEXSTR) string
+Name Description Schema
+expDate
+optional
+Token expirty date in UTC string (dateTime)
+token
+optional
+Token value - Base64 encode string
+CardToken
+An object representing card token
+Client
+Client
+Name Description Schema
+clientId
+optional
+read-only
+Client identifier integer
+groupId
+optional
+Group identifier integer
+internalParameters
+optional
+< ClientInternalParameter > array
+name
+optional
+Client name
+Maximal length : 50
+string
+Name Description Schema
+fleetName
+required
+Fleet identifier
+Maximal length : 50
+string
+name
+required
+Parameter name
+Maximal length : 50
+string
+value
+optional
+Parameter value (empty value removes parameter)
+Maximal length : 255
+string
+Name Schema
+clients
+optional
+< Client > array
+ClientInternalParameter
+Internal client parameter
+Clients
+Table of clients
+ClientsPagedResponse
+Polymorphism : Composition
+Name Description Schema
+clients
+optional
+< Client > array
+limit
+optional
+Present limit integer
+offset
+optional
+Offset integer
+total
+optional
+Total count integer
+Name Description Schema
+DriverId
+optional
+Driver identifier within the company. Format: "^[0-9]
+{1,12}$"
+Maximal length : 12
+string
+UnencryptedId
+optional
+Additional identifier requested by company during
+refuelling. Format: "^[0-9]{1,10}$"
+Maximal length : 10
+string
+VehicleNumber
+optional
+Vehicle number is an identifier of a vehicle within the
+company (not plate number). Format: "^[0-9]{1,10}$"
+Maximal length : 10
+string
+additionalTrack
+optional
+(Additional track 2 value of a magstripe card (HEXSTR))
+Maximal length : 80
+string
+costCenter
+optional
+Cost center (MPK) format: "^[0-9]{1,10}$"
+Maximal length : 50
+string
+driverName
+optional
+Driver name
+Maximal length : 50
+string
+odometer
+optional
+odometer reading value
+Maximum value : 9999999
+integer
+plateNumber
+optional
+Car registration number (format: "^[a-zA-Z0-9-& ]{1,15}$") string
+CustomerData
+An object representing the card holder's data
+CustomerDataDefinition
+Definition of customer data
+Name Description Schema
+pattern
+optional
+The value of the regular expression parsing the data
+Maximal length : 128
+string
+type
+optional
+CustomerDataType
+CustomerDataType
+Type of the customer data:
+1 - odometer
+2 - plate number
+3 - cost center (MPK)
+4 - driver name
+5 - vehicle number
+6 - driver id
+7 - unencrypted id
+8 - additional track
+Type : enum (1, 2, 3, 4, 5, 6, 7, 8)
+EntryModeDataType
+Type of the entry mode:
+1 - Chip
+2 - CTLS
+3 - Magstripe
+4 - Manual entry
+5 - Magstripe fallback
+6 - Card token
+Type : enum (1, 2, 3, 4, 5, 6)
+EodFile
+Eod file process status
+Name Description Schema
+currentStatus
+optional
+EodFileStatus
+id
+optional
+EOD file identifier integer
+name
+optional
+EOD file name.
+File name format: TF{Client_name}YYYYMMDD_SSS.json,
+where:
+* {Client_name} - client name
+* YYYYMMDD - file generation date in format
+YYYYMMDD
+* SSS - sequence number in current day (left-padded
+with zeros to 3 digits)
+string
+Name Description Schema
+code
+optional
+EodFileStatusCode
+dateTime
+optional
+string (date-time)
+message
+optional
+Status code description (it only matters for errors) string
+Name Schema
+eodFiles
+optional
+< EodFile > array
+EodFileStatus
+Eod file process status
+EodFileStatusCode
+Processing EOD file status code:
+0 - added
+1 - processing
+2 - processed with errors
+3 - processed successfully
+4 - partially processed
+Type : enum (0, 1, 2, 3, 4)
+EodFiles
+Table of Eod files
+Name Description Schema
+eodFiles
+optional
+< EodFile > array
+limit
+optional
+Present limit integer
+offset
+optional
+Offset integer
+total
+optional
+Total count integer
+EodFilesPagedResponse
+Polymorphism : Composition
+EodItem
+An object representing the position to be settled
+Name Description Schema
+authorizationCode
+required
+authorisation code, Patterns: AVIA "^[azA-
+Z0-9 ]{6}$" DCI "^[a-zA-Z0-9 ]{6}$" DKV
+"^[a-zA-Z0-9]{6,10}$" E100 "^[0-9 ]{6}$"
+EKOTANK "^[0-9]{6}$" EUROWAG "^[0-9]
+{6}$" LOTOS "^[0-9]{6}$" UTA "^[0-9]
+{5,6}$" IQCARD "^[a-zA-Z0-9]{6}$"
+string
+cardData
+required
+CardData
+currencyCode
+required
+currency code - numeric ( ISO 4217 )
+Pattern : "^[0-9]{3}$"
+string
+customerData
+optional
+CustomerData
+fleet
+required
+fleet identifier FleetType
+gateNumber
+optional
+gate number for toll road
+Maximal length : 9
+Pattern : "^[0-9]{1,9}$"
+string
+product
+required
+TransactionProduct
+receiptId
+required
+receipt number
+Maximal length : 10
+Pattern : "^[0-9]{1,10}$"
+string
+transactionDateTime
+required
+transaction date and time string (dateTime)
+transactionId
+required
+transaction identifier set by terminal
+(STAN)
+Minimum value : 1
+Maximum value : 999999
+integer
+type
+required
+transaction type ( TransactionType ) TransactionType
+EodTransaction
+An object representing a transaction settlement operation (EOD)
+Name Description Schema
+amount
+required
+sum of item amounts (for items of type 5 - reversal
+(withdrawal) ** RV ,
+we treat the sums when adding up as negative)
+Minimum value** : 0
+Maximum value : 999999999999
+integer (int64)
+batchId
+required
+Batch number
+Minimum value : 1
+Maximum value : 999999
+integer
+items
+optional
+< EodItem >
+array
+number
+required
+number of transaction in the batch integer
+Name Description Schema
+name
+optional
+Fleet name FleetType
+ranges
+optional
+Fleet card number range < FleetCardsRange > array
+requiredParameters
+optional
+Mandatory parameters to set < ParameterDefinition > array
+Fleet
+Fleet object
+FleetCardsRange
+Fleet card range object
+Name Description Schema
+from
+optional
+read-only
+range from
+Maximal length : 19
+string
+length
+optional
+read-only
+Card PAN length integer
+name
+optional
+read-only
+Name for sub-fleet
+Maximal length : 50
+string
+offline
+optional
+read-only
+Offline transaction allowence flag boolean
+to
+optional
+read-only
+range to
+Maximal length : 19
+string
+Name Description Schema
+key
+optional
+Fleet specific data key string
+value
+optional
+Fleet specific data value string
+Name Schema
+fleets
+optional
+< Fleet > array
+FleetSpecificData
+Object represents fleet specific data (key-value)
+Type : < FleetSpecificData > array
+FleetSpecificData
+FleetType
+Fleet system type
+Type : string
+Fleets
+Table of fleets
+Name Description Schema
+fleets
+optional
+< Fleet > array
+limit
+optional
+Present limit integer
+offset
+optional
+Offset integer
+total
+optional
+Total count integer
+Name Description Schema
+name
+required
+global parameter name
+Maximal length : 50
+string
+value
+optional
+global parameter value
+Maximal length : 255
+string
+FleetsPagedResponse
+Polymorphism : Composition
+GlobalParameter
+The object represents a global parameter that can be set for the terminal,
+station, partner
+GlobalParameterDefinition
+The object represents the definition of a global parameter that can be set for
+terminal, station,
+partner, customer, group
+Name Description Schema
+allowedForClient
+optional
+determines whether a given global parameter can be
+set at the client level
+boolean
+allowedForGroup
+optional
+determines whether a given global parameter can be
+set at the group level
+boolean
+allowedForPartner
+optional
+determines whether a given global parameter can be
+set at the partner level
+boolean
+allowedForStation
+optional
+determines whether a given global parameter can be
+set at the station level
+boolean
+allowedForTerminal
+optional
+determines whether a given global parameter can be
+set at the terminal level
+boolean
+defaultValue
+optional
+Global parameter value
+Maximal length : 255
+string
+description
+optional
+Global parameter description string
+isUnique
+optional
+determines whether a given global parameter must
+be unique in the whole tree
+boolean
+name
+optional
+Global parameter name
+Maximal length : 50
+string
+pattern
+optional
+Regular expression for control of global parameter
+value
+string
+required
+optional
+determines whether a given global parameter must
+be set
+boolean
+Name Schema
+globalParameters
+optional
+< GlobalParameter > array
+GlobalParameters
+Table of global parameters
+Group
+Group
+Name Description Schema
+groupId
+optional
+read-only
+Group indentifier integer
+name
+optional
+Group name
+Maximal length : 50
+string
+Name Schema
+groups
+optional
+< Group > array
+Name Description Schema
+groups
+optional
+< Group > array
+limit
+optional
+Present limit integer
+offset
+optional
+Offset integer
+total
+optional
+Total count integer
+Name Description Schema
+name
+optional
+internal product name
+Maximal length : 25
+string
+productId
+optional
+internal product identifier
+Maximal length : 6
+Pattern : "^[a-zA-Z0-9_]{1,6}$"
+string
+Groups
+Table of groups
+GroupsPagedResponse
+Polymorphism : Composition
+InternalTransactionProduct
+An object that represents product properties in the client system
+Name Description Schema
+login
+optional
+read-only
+User's login string
+userId
+optional
+read-only
+User's identifier integer
+Name Schema
+password
+optional
+string (password)
+username
+optional
+string
+Name Description Schema
+expirationDate
+optional
+card expiry date (formt MMYY )
+Maximal length : 4
+Pattern : "^(0[1-9]\|1[0-2])([0-9]{2})$"
+string
+pan
+optional
+Card number (PAN)
+Maximal length : 19
+Pattern : "^[0-9]{1,19}$"
+string
+LoggedUserContext
+Logged user's data
+Login
+User login data
+ManualCardData
+An object representing the data of the fleet card - manual entry
+ManualTransaction
+An object representing a manually entered sales transaction
+confirmed by an authorization code
+obtained by phone
+Name Description Schema
+amount
+required
+transaction amount (two decimal
+digits)
+Minimum value : 1
+Maximum value : 999999999999
+integer (int64)
+authorizationCode
+required
+authorisation code, Patterns: AVIA
+"^[a-zA-Z0-9 ]{6}$" DCI "^[a-zA-Z0-9 ]
+{6}$" DKV "^[a-zA-Z0-9]{6,10}$" E100
+"^[0-9 ]{6}$" EKOTANK "^[0-9]{6}$"
+EUROWAG "^[0-9]{6}$" LOTOS "^[0-9]
+{6}$" UTA "^[0-9]{5,6}$" IQCARD "^[azA-
+Z0-9]{6}$"
+string
+complaintId
+optional
+complaint identifier integer
+currencyCode
+required
+currency code - numeric ( ISO 4217 )
+Pattern : "^[0-9]{3}$"
+string
+customerData
+optional
+CustomerData
+fleet
+required
+fleet identifier FleetType
+gateNumber
+optional
+gate number for toll road
+Maximal length : 9
+Pattern : "^[0-9]{1,9}$"
+string
+manualCardData
+required
+ManualCardData
+products
+required
+< TransactionProduct >
+array
+receiptId
+required
+receipt number
+Maximal length : 10
+Pattern : "^[0-9]{1,10}$"
+string
+transactionDateTime
+required
+transaction date and time string (dateTime)
+type
+required
+manual transaction type
+( ManualTransactionType )
+ManualTransactionType
+ManualTransactionType
+An object representing possible manual transactions to be performed
+1 - sale
+2 - reversal
+Type : enum (1, 2)
+Name Description Schema
+transactionDateTime
+optional
+transaction date and time string (dateTime)
+transactionId
+optional
+Transaction identifier set by terminal (STAN)
+Minimum value : 1
+Maximum value : 999999
+integer
+Name Description Schema
+limit
+optional
+Present limit integer
+offset
+optional
+Offset integer
+total
+optional
+Total count integer
+Name Description Schema
+name
+required
+parameter name
+Maximal length : 50
+string
+value
+optional
+parameter value
+Maximal length : 255
+string
+MeasureUnit
+Measure unit
+Type : enum (L, W, Q)
+OriginalTransaction
+An object representing base transaction data.
+PagedResponse
+Parameter
+The object represents the fleet parameter that can be set for the terminal, station, partner
+ParameterDefinition
+The object represents the definition of the fleet parameter that can be set for
+terminal, station,
+partner
+Name Description Schema
+allowedForPartner
+optional
+determines whether a given parameter can be set at
+the partner level
+boolean
+allowedForStation
+optional
+determines whether a given parameter can be set at
+the station level
+boolean
+allowedForTerminal
+optional
+determines whether a given parameter can be set at
+the terminal level
+boolean
+defaultValue
+optional
+parameter value
+Maximal length : 255
+string
+description
+optional
+parameter description string
+isUnique
+optional
+determines whether a given parameter must be
+unique in the entire client tree
+boolean
+name
+optional
+parameter name
+Maximal length : 50
+string
+pattern
+optional
+regular expression for parameter value control string
+required
+optional
+determines whether the parameter must be set boolean
+Name Schema
+parameters
+optional
+< Parameter > array
+Parameters
+Table of parameters
+Partner
+Partner
+Name Description Schema
+activityPeriod
+optional
+ActivityPeriod
+address
+optional
+Partner address string
+city
+optional
+Parner city string
+clientId
+optional
+Client identifier integer
+countryCode
+optional
+Numeric country code of the partner ISO 3166-1
+Maximal length : 3
+string
+currencyCode
+optional
+Numeric currency code of the partner ISO 4217
+Maximal length : 3
+string
+fullName
+optional
+Partner full name string
+name
+optional
+Partner name
+Maximal length : 50
+string
+partnerId
+optional
+read-only
+Partner identifier integer
+relatedPartnerId
+optional
+If partner is related to other partner (partner in the
+same client) then it can have the same value of
+SUPPLIER_ID
+integer
+taxNumber
+optional
+Partner tax number string
+zipCode
+optional
+Partner post code string
+Name Schema
+partners
+optional
+< Partner > array
+Partners
+Table of partners
+PartnersPagedResponse
+Polymorphism : Composition
+Name Description Schema
+limit
+optional
+Present limit integer
+offset
+optional
+Offset integer
+partners
+optional
+< Partner > array
+total
+optional
+Total count integer
+Name Description Schema
+pinBlock
+optional
+Value of pinBlock (HEXSTR) string
+pinBlockKey
+optional
+Random value for pin encryption key derivation (HEXSTR) string
+Name Description Schema
+fuelProduct
+optional
+Determines if the product is a fuel boolean
+measureUnit
+optional
+MeasureUnit
+name
+optional
+product name string
+productId
+optional
+product identifier integer
+remarks
+optional
+Product description
+Maximal length : 255
+string
+restrictionCodeDKV
+optional
+Restriction code for DKV fleet integer
+taxCode
+optional
+VAT group
+Maximal length : 10
+string
+vat
+optional
+vat value (two decimal digits) integer
+PinData
+An object representing the data of the transmitted pinblock
+Product
+obiekt reprezentujący produkt
+Name Description Schema
+fleetProductId
+optional
+fleet product identifier string
+productId
+optional
+product identifier integer
+Name Schema
+products
+optional
+< Product > array
+Name Schema
+products
+optional
+< ProductMapping > array
+Name Description Schema
+code
+required
+Error code. Possible values:
+* 1 - internal error
+* 2 - incorrect request parameters (incorrect parameters in the
+URL)
+* 3 - incorrect request content (incorrect json / body object
+method)
+integer
+message
+required
+Error description string
+ProductMapping
+an object representing the product identifier mapping
+Products
+Table of products
+ProductsMapping
+Table of product code mapping
+ResponseCode
+Response code.
+Rights
+User rights (other than standard)
+Name Description Schema
+complaint
+optional
+complaint right boolean
+complaintProcess
+optional
+complaint process right boolean
+reportAccess
+optional
+report access right boolean
+userManagemenet
+optional
+user management access right boolean
+Name Description Schema
+activityPeriod
+optional
+ActivityPeriod
+address
+optional
+Station address string
+city
+optional
+Station city string
+fullName
+optional
+Station full name
+Maximal length : 255
+string
+mcc
+optional
+Station MCC string
+mid
+optional
+Station MID string
+name
+optional
+Fuel station name
+Maximal length : 255
+string
+partnerId
+optional
+Fuel station's partner ID integer
+stationId
+optional
+read-only
+Fuel station identifier integer
+zipCode
+optional
+Station post code string
+Station
+Fuel station
+Name Schema
+stations
+optional
+< Station > array
+Name Description Schema
+limit
+optional
+Present limit integer
+offset
+optional
+Offset integer
+stations
+optional
+< Station > array
+total
+optional
+Total count integer
+Stations
+Table of Fuel station
+StationsPagedResponse
+Polymorphism : Composition
+Terminal
+Terminal in fuel station
+Name Description Schema
+activityPeriod
+required
+ActivityPeriod
+batch
+optional
+present batch number
+Minimum value : 1
+Maximum value : 999999
+integer
+serialNumber
+required
+terminal serial number
+Maximal length : 50
+string
+stationId
+optional
+The identifier of the station to which the
+terminal is attached
+integer
+terminalId
+optional
+read-only
+Terminal identifier assigned by the system integer
+terminalType
+optional
+TerminalType
+tid
+optional
+Terminal identifier TID
+Maximal length : 8
+Pattern : "^[0-9]{1,8}$"
+string
+transactionId
+optional
+identifier of the last transaction
+Minimum value : 1
+Maximum value : 999999
+integer
+transactionPassword
+optional
+read-only
+The password of user which have rights to
+perform transactions on the terminal
+(value generated / transmitted when adding a
+terminal)
+string
+transactionUser
+optional
+read-only
+The username which have rights to perform
+transactions on the terminal
+(value generated / transmitted when adding a
+terminal)
+string
+TerminalType
+typ terminala:
+0 - desktop (desktop payment terminal - indoor)
+1 - unattended (selfservice outdoor terminal)
+2 - www
+Type : enum (0, 1, 2)
+Name Schema
+terminals
+optional
+< Terminal > array
+Name Description Schema
+limit
+optional
+Present limit integer
+offset
+optional
+Offset integer
+terminals
+optional
+< Terminal > array
+total
+optional
+Total count integer
+Name Description Schema
+expires
+optional
+read-only
+Token's expiration date string (date-time)
+token
+optional
+read-only
+Token string
+Terminals
+Table of the terminals
+TerminalsPagedResponse
+Polymorphism : Composition
+Token
+Authorization token's data
+Transaction
+The object representing the transaction. The response field is completed in
+answers to sent data
+(in the request data this field is ignored)
+Name Description Schema
+allowedProducts
+optional
+allowed product identifiers list < integer > array
+amount
+optional
+transaction amount (two decimal
+digits)
+Minimum value : 1
+Maximum value : 999999999999
+integer (int64)
+authorizationCode
+optional
+authorisation code, Patterns: AVIA
+"^[a-zA-Z0-9 ]{6}$" DCI "^[a-zA-Z0-9
+]{6}$" DKV "^[a-zA-Z0-9]{6,10}$"
+E100 "^[0-9 ]{6}$" EKOTANK "^[0-9]
+{6}$" EUROWAG "^[0-9]{6}$"
+LOTOS "^[0-9]{6}$" UTA "^[0-9]
+{5,6}$" IQCARD "^[a-zA-Z0-9]{6}$"
+string
+batchId
+required
+the number of the settlement
+package (batch number of the
+EOD operation in which
+current transaction will be sent)
+Minimum value : 1
+Maximum value : 999999
+integer
+cardData
+optional
+CardData
+currencyCode
+optional
+numeric currency code ISO 4217
+Pattern : "^[0-9]{3}$"
+string
+customerData
+optional
+CustomerData
+fleet
+optional
+fleet identifier FleetType
+fleetSpecificData
+optional
+FleetSpecificData
+gateNumber
+optional
+gate number for toll road
+Maximal length : 9
+Pattern : "^[0-9]{1,9}$"
+string
+newCardToken
+optional
+Generated card token CardToken
+newPinData
+optional
+PinData
+originalAmount
+optional
+preauthorisation amount (two
+decimal digits)
+Minimum value : 1
+Maximum value : 999999999999
+integer (int64)
+Name Description Schema
+originalTransaction
+optional
+OriginalTransaction
+pinData
+optional
+PinData
+products
+optional
+< TransactionProduct >
+array
+requiredCustomerData
+optional
+<
+CustomerDataDefinition
+> array
+response
+optional
+TransactionResponse
+retry
+optional
+repeat flag (0 - original transaction,
+1 - repeat transkaction)
+integer
+reversalReason
+optional
+Cancellation reason:
+* 0 - automatic reversal
+(communication error)
+* 1 - cancellation at the request of
+the operator of the terminal / sales
+system
+* 2 - other errors
+integer
+transactionDateTime
+optional
+transaction date and time string (dateTime)
+transactionId
+optional
+Transaction identifier set by
+terminal (STAN)
+Minimum value : 1
+Maximum value : 999999
+integer
+transmissionDateTime
+optional
+transmission date and time string (dateTime)
+type
+required
+Transaction type
+( TransactionType )
+TransactionType
+TransactionEod
+An object representing a transaction settlement operation (EOD) - table of product in
+TransactionEodItem
+Name Description Schema
+amount
+required
+sum of item amounts (for items of type 5 - reversal
+(withdrawal) ** RV ,
+we treat the sums when adding up as negative)
+Minimum value** : 0
+Maximum value : 999999999999
+integer (int64)
+batchId
+required
+batch number
+Minimum value : 1
+Maximum value : 999999
+integer
+items
+optional
+< TransactionEodItem
+> array
+number
+required
+number of transaction in batch integer
+TransactionEodItem
+An object representing the position to be settled (many products in one position)
+Name Description Schema
+authorizationCode
+required
+authorisation code, Patterns: AVIA "^[azA-
+Z0-9 ]{6}$" DCI "^[a-zA-Z0-9 ]{6}$" DKV
+"^[a-zA-Z0-9]{6,10}$" E100 "^[0-9 ]{6}$"
+EKOTANK "^[0-9]{6}$" EUROWAG "^[0-9]
+{6}$" LOTOS "^[0-9]{6}$" UTA "^[0-9]
+{5,6}$" IQCARD "^[a-zA-Z0-9]{6}$"
+string
+cardData
+required
+CardData
+currencyCode
+required
+currency code - numeric ( ISO 4217 )
+Pattern : "^[0-9]{3}$"
+string
+customerData
+optional
+CustomerData
+fleet
+required
+fleet identifier FleetType
+gateNumber
+optional
+gate number for toll road
+Maximal length : 9
+Pattern : "^[0-9]{1,9}$"
+string
+products
+optional
+<
+TransactionProduct
+> array
+receiptId
+required
+receipt number
+Maximal length : 10
+Pattern : "^[0-9]{1,10}$"
+string
+transactionDateTime
+required
+transaction date and time string (dateTime)
+transactionId
+required
+transaction id set by terminal (STAN)
+Minimum value : 1
+Maximum value : 999999
+integer
+type
+required
+transaction type TransactionType
+TransactionProduct
+An object representing one product in the transaction
+Name Description Schema
+amount
+optional
+product value (two decimal digits)
+Minimum value : 1
+Maximum value : 999999999999
+integer (int64)
+internalProduct
+optional
+InternalTransactionProduct
+price
+optional
+unit price (two decimal digits)
+Minimum value : 1
+Maximum value : 999999999
+integer
+productId
+optional
+product idnetifier
+( Product.productId )
+integer
+quantity
+optional
+product quantity (two decimal digits)
+Minimum value : 1
+Maximum value : 999999999
+integer
+TransactionResponse
+Transaction response object
+Name Description Schema
+code
+optional
+Response code
+* 0 Approved
+* 1 Honour, with Identification
+* 2 Approved for partial amount
+* 3 Approved (VIP)
+* 7 Approved, update ICC
+* 80 Approved (liability not accepted)
+* 100 Do not honour
+* 101 Expired card
+* 102 Suspected fraud
+* 103 Card Acceptor contact acquirer
+* 104 Restricted card
+* 106 Allowable PIN Tries exceeded
+* 107 Refer to Card Issuer
+* 109 Invalid Merchant
+* 110 Invalid Amount
+* 111 Invalid Card Number
+* 112 PIN data required
+* 114 No account of type requested
+* 115 Requested Function not supported
+* 116 Not sufficient funds
+* 117 Incorrect PIN
+* 118 No card record
+* 119 Transaction not permitted to the customer
+* 120 Transaction not permitted to the terminal
+* 121 Exceeds withdrawal amount limit
+* 123 Exceeds withdrawal frequency limit
+* 125 Card not effective
+* 126 Invalid PIN block
+* 127 PIN length error
+* 128 PIN key synch error
+* 180 Redemption denied by Loyalty
+* 181 Card blocked
+* 182 Account blocked
+* 185 Product(s) not allowed
+* 186 Allowable PIN tries exceeded
+* 187 Wrong odometer reading
+* 188 Limit exceeded, contact FM
+* 189 Site / Time not allowed, contact FM
+* 191 Unknown POS terminal
+* 200 Pick-up card
+* 201 Expired card
+* 202 Suspected fraud
+* 203 Card acceptor contact acquirer
+* 204 Restricted card
+* 206 Allowable PIN tries exceeded
+* 207 Special condition
+* 208 Lost Card
+* 209 Stolen Card
+* 288 Too many cards on account
+integer
+Name Description Schema
+* 289 Already migrated
+* 290 Customer registration required
+* 291 Migration has to undertaken at the callcenter
+* 292 Migration validity period expired
+* 300 PIN change required
+* 400 Reversal advice Accepted
+* 480 Reversal advice Accepted, no original transaction
+* 500 Reconciled; In balance
+* 501 Reconciled; Out of balance
+* 580 Reconciled; Out of balance do not attempt error recovery
+* 800 Accepted Transaction advice acknowledgement
+* 900 Advice acknowledged - no financial liability accepted
+* 901 Advice acknowledged
+* 902 Invalid transaction
+* 903 Re-enter transaction
+* 904 Format error
+* 906 Cutover in progress
+* 907 Card Issuer or Switch inoperative
+* 909 System malfunction
+* 912 Card issuer unavailable
+* 911 Card issuer timed out
+* 916 MAC incorrect
+* 917 MAC key synch error
+* 921 Security Software Hardware Error
+* 922 Message number out of sequence
+* 923 Request in progress
+* 930 Operation not allowed for the fleet
+* 940 Product's amount sum is different than transaction amount
+* 941 Additional data is incorrect
+* 942 Authorization code is incorrect
+* 943 Fleet is inactive
+* 944 Transaction currency is incorrect
+* 945 Transaction/batch number is incorrect
+message
+optional
+response message string
+TransactionType
+An object representing transactions supported by the FleetAPI
+1 - handshake (connection test)
+2 - sale online (sale on-line)
+3 - preauthorization (preauthorization)
+4 - authorization advice (preauthorisation completion, finantial advice)
+5 - reversal (cancellation)
+6 - balance
+7 - pin change
+8 - tokenization
+Type : enum (1, 2, 3, 4, 5, 6, 7, 8)
+Name Description Schema
+accessModes
+optional
+AccessMode
+active
+optional
+User activity boolean
+login
+optional
+User login
+Maximal length : 255
+string
+password
+optional
+User password
+Maximal length : 255
+string
+rights
+optional
+Rights
+userId
+optional
+read-only
+User indentifier integer
+Name Schema
+users
+optional
+< User > array
+Name Description Schema
+limit
+optional
+Present limit integer
+offset
+optional
+Offset integer
+total
+optional
+Total count integer
+users
+optional
+< User > array
+User
+User
+Users
+Table of users
+UsersPagedResponse
+Polymorphism : Composition
+Security
+BasicSecurity
+Login and password based authorisation
+Type : basic
+Bearer
+Type : apiKey
+Name : Authorization
+In : HEADER
